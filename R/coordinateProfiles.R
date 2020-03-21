@@ -44,9 +44,10 @@
 #' threshold=-10
 #'
 #' # Compute coordinate profiles on the posterior mean
-#' options_full<-list(multistart=4,heavyReturn=TRUE, Design = replicate(2,seq(0,1,,60)))
-#' init_des<-lhs::maximinLHS(15,2)
-#' options_approx<- list(multistart=4,heavyReturn=TRUE,initDesign=init_des,fullDesignSize=60)
+#' # Increase multistart and size of designs for more precise results
+#' options_full<-list(multistart=2,heavyReturn=TRUE, Design = replicate(2,seq(0,1,,50)))
+#' init_des<-lhs::maximinLHS(12,2)
+#' options_approx<- list(multistart=2,heavyReturn=TRUE,initDesign=init_des,fullDesignSize=50)
 #' cProfilesMean<-coordinateProfiles(object=kmModel,threshold=threshold,options_full=options_full,
 #'                                   options_approx=options_approx,uq_computations=FALSE,
 #'                                   plot_level=3,plot_options=NULL,CI_const=NULL,return_level=2)
@@ -93,7 +94,7 @@ coordinateProfiles = function(object,threshold,options_full=NULL,options_approx=
 
   # Set up plot options
   if(!is.null(options_full$Design))
-    plot_options <- list(design = options_full$Design)
+    plot_options$design = options_full$Design
   plot_options<-setPlotOptions(plot_options = plot_options,d=d,num_T=num_T,kmModel=object$kmModel)
 
   ## posterior mean part ##
@@ -140,7 +141,7 @@ coordinateProfiles = function(object,threshold,options_full=NULL,options_approx=
     if(plot_options$save)
       cairo_pdf(filename = paste(plot_options$folderPlots,"2dpostMean_1",plot_options$id_save,".pdf",sep=""),width = 12,height = 12)
     par(mar = c(5, 5, 4, 2) + 0.1)
-    image(matrix(pred2d$mean,nrow = 100),col=gray.colors(20), main=plot_options$title2d,xlab = plot_options$coord_names[1],ylab= plot_options$coord_names[2],
+    image(matrix(pred2d$mean,nrow = 100),col=gray.colors(20), main=plot_options$title2d,xlab = "", ylab = "", #colnames(object$kmModel@X)[1],ylab= colnames(object$kmModel@X)[2],
           cex.main=3,cex.axis=1.8,cex.lab=2.8)
     contour(matrix(pred2d$mean,nrow = 100),add=T,nlevels = 10,lwd=1.5,labcex=1.2)
     contour(matrix(pred2d$mean,nrow = 100),add=T,levels = threshold,col=plot_options$col_thresh,lwd=3,labcex=1.5)
